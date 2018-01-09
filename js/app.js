@@ -46,6 +46,7 @@ Enemy.prototype.render = function() {
 var Player = function(x,y){
     // 继承函数
     Enemy.call(this,0,x,y);    
+    this.score = 0;
 
     this.sprite = 'images/char-boy.png';
 
@@ -53,31 +54,37 @@ var Player = function(x,y){
 
 // player移动函数
 Player.prototype.handleInput = function(action){
+    var crosswise = 100;
+    var lengthways = 85;
     switch(action){
         case 'left':
-            var move = this.x - 100;
-            if(move > -100){
+            var move = this.x - crosswise;
+            if(move > -crosswise){
                 this.x = move;
             }
             break;
         case 'right':
-            var move = this.x + 100;
+            var move = this.x + crosswise;
             if(move < 500){
                 this.x = move;
             }
             break;
         case 'up':
-            var move = this.y - 85;
+            var move = this.y - lengthways;
 
             if(move >= -20){
                 this.y = move;
             }
 
-            sleep("3000");
+            // 之前忘了加判断条件
+            if(move <= -20){
+                sleep("1000");
+                this.score = this.score + 100;
+            }
             break;
 
         case 'down':
-            var move = this.y + 85;
+            var move = this.y + lengthways;
             if(move <= 450){
                 this.y = move;
             }
@@ -94,7 +101,7 @@ Player.prototype.update = function(){
         var absY = Math.abs(enemy.y - player.y);
         // console.log(absX+"...."+absY);
 
-        if(absY < 5 && absX < 45){
+        if(absY < 65 && absX < 65){
             reset();
         }
     });
@@ -103,11 +110,17 @@ Player.prototype.update = function(){
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    //绘制分数
+    ctx.fillStyle = "white";
+    ctx.font = '26px Arial';
+    ctx.fillText("Your Score: " + this.score, 15, 90);
 };
 
 // 触发重置的函数
 function reset(){
-    player = new Player(300,320);
+    //player = new Player(300,320);
+    player.x = 300;
+    player.y = 320;
 }
 
 function sleep(msec){
@@ -130,7 +143,7 @@ function instantiation(){
     player = new Player(300,320);
 }
 
-setTimeout("instantiation()","0");
+instantiation();
 
 
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Player.handleInput()
